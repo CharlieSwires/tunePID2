@@ -129,8 +129,8 @@ public class TunePID2 extends JPanel{
         int width = getWidth();
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, width, height);
-        if (enemy != null) {
-            for(int i = 1; i < enemy.size();i++) {
+        if (enemy != null && you != null) {
+            for(int i = 1; i < enemy.size() && i < you.size();i++) {
                 g.setColor(Color.RED);
                 g.drawLine((int)enemy.get(i-1).x+width/2, height/2 -(int)enemy.get(i-1).y, width/2+(int)enemy.get(i).x, height/2-(int)enemy.get(i).y);
                 g.setColor(Color.GREEN);
