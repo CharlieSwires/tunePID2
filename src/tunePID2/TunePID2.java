@@ -48,9 +48,8 @@ public class TunePID2 extends JPanel{
             while(true) {
                 while(!start) {
                     try {
-                        pt.thread.sleep(100);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
