@@ -26,13 +26,13 @@ public class TunePID2 extends JPanel{
     int height = 1000;
     JButton go = new JButton("go");
     JFrame jfrm = new JFrame("PID tune");
-    boolean start = true;
+    boolean start = false;
     static TunePID2 pt;
     List<TwoDPoint> enemy;
     List<TwoDPoint> you;
     TwoDPoint enemyv;
     TwoDPoint youv;
-
+    PIDThread thread;
 
     class TwoDPoint {
         public double x;
@@ -45,6 +45,16 @@ public class TunePID2 extends JPanel{
         float Kd = 1.0f;
         @Override
         public void run() {
+            while(true) {
+                while(!start) {
+                    try {
+                        pt.thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                
                 init();
                 float accumulation_of_error = 0.0f;
                 float derivative_of_error = 0.0f;
@@ -90,7 +100,7 @@ public class TunePID2 extends JPanel{
                     index++;
                     pt.repaint();
                 }
-            
+            }
         }
         private void init() {
             enemy = new ArrayList<TwoDPoint>();
@@ -100,7 +110,7 @@ public class TunePID2 extends JPanel{
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
             TwoDPoint mp = new TwoDPoint();
-            mp.x = 500.0;
+            mp.x = 300.0;
             mp.y = 0.0;
             you.add(mp);
             enemyv = new TwoDPoint();
@@ -159,9 +169,9 @@ public class TunePID2 extends JPanel{
 
     public static void main(String[] args) {
         pt = new TunePID2();
-        PIDThread thread = pt.new PIDThread();
+        pt.thread = pt.new PIDThread();
         pt.new PaintDemo();
-        thread.start();
+        pt.thread.start();
 
 
     }
