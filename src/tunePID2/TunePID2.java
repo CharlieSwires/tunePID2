@@ -54,7 +54,7 @@ public class TunePID2 extends JPanel{
                         e.printStackTrace();
                     }
                 }
-                
+
                 init();
                 float accumulation_of_error = 0.0f;
                 float derivative_of_error = 0.0f;
@@ -110,7 +110,7 @@ public class TunePID2 extends JPanel{
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
             TwoDPoint mp = new TwoDPoint();
-            mp.x = 300.0;
+            mp.x = 500.0;
             mp.y = 0.0;
             you.add(mp);
             enemyv = new TwoDPoint();
@@ -129,11 +129,13 @@ public class TunePID2 extends JPanel{
         int width = getWidth();
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, width, height);
-        for(int i = 1; i < enemy.size();i++) {
-            g.setColor(Color.RED);
-            g.drawLine((int)enemy.get(i-1).x+width/2, height/2 -(int)enemy.get(i-1).y, width/2+(int)enemy.get(i).x, height/2-(int)enemy.get(i).y);
-            g.setColor(Color.GREEN);
-            g.drawLine((int)you.get(i-1).x+width/2, height/2 -(int)you.get(i-1).y, width/2+(int)you.get(i).x, height/2-(int)you.get(i).y);
+        if (enemy != null) {
+            for(int i = 1; i < enemy.size();i++) {
+                g.setColor(Color.RED);
+                g.drawLine((int)enemy.get(i-1).x+width/2, height/2 -(int)enemy.get(i-1).y, width/2+(int)enemy.get(i).x, height/2-(int)enemy.get(i).y);
+                g.setColor(Color.GREEN);
+                g.drawLine((int)you.get(i-1).x+width/2, height/2 -(int)you.get(i-1).y, width/2+(int)you.get(i).x, height/2-(int)you.get(i).y);
+            }
         }
 
     }
