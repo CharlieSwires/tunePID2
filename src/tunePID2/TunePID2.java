@@ -33,16 +33,25 @@ public class TunePID2 extends JPanel{
     TwoDPoint enemyv;
     TwoDPoint youv;
     PIDThread thread;
-
+    TwoDPoint ep = new TwoDPoint();
+    TwoDPoint mp = new TwoDPoint();
+    static final double ACCEL = 9.81;
+    
     class TwoDPoint {
         public double x;
         public double y;
+        TwoDPoint(double x, double y){
+            this.x = x;
+            this.y = y;
+        }
+        public TwoDPoint() {
+        }
     }
     class PIDThread extends Thread{
-        float delta_time = (float)(1.0/60.0);
-        float Kp = 10.0f;
-        float Ki = 1.0f;
-        float Kd = 1.0f;
+        float delta_time = (float)(1.0/100.0);
+        float Kp = 0.5f;
+        float Ki = 0.2f;
+        float Kd = 0.0f;
         @Override
         public void run() {
             while(true) {
@@ -57,6 +66,17 @@ public class TunePID2 extends JPanel{
                 init();
                 float accumulation_of_error = 0.0f;
                 float derivative_of_error = 0.0f;
+                TwoDPoint intlDirection = new TwoDPoint();
+                double positionx;
+                double positiony;
+                positionx = ep.x;
+                positiony = ep.y;
+                double position2x;
+                double position2y;
+                position2x = mp.x;
+                position2y = mp.y;
+
+                double amplitude = 0.0;
                 int index = 0;
                 while(start) {
                     //calculate error
@@ -72,52 +92,81 @@ public class TunePID2 extends JPanel{
                             (you.get(index).y-enemy.get(index).y)+
                             (you.get(index).x-enemy.get(index).x)*
                             (you.get(index).x-enemy.get(index).x)) < 100.0) {
+
                         System.out.println("Bang");
                         start = false;
                         break;
                     }
-                    error = (float) Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x);
+                    //Initial vector
+                    if (index == 0) {
+                        intlDirection.x = you.get(index).x-enemy.get(index).x;
+                        intlDirection.y = you.get(index).y-enemy.get(index).y;
+                        amplitude = Math.sqrt(intlDirection.x*intlDirection.x+
+                                intlDirection.y*intlDirection.y);
+                  
+                        enemyv.x = ACCEL*intlDirection.x*delta_time/amplitude;
+                        enemyv.y = ACCEL*intlDirection.y*delta_time/amplitude;
+                    }
+                    System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y-intlDirection.y)+","+(you.get(index).x-enemy.get(index).x-intlDirection.x));
+                    error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
+                    error -= (float) (Math.atan2(enemyv.y,enemyv.x));
+                    error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
+                    System.out.println("error="+error+", "+(180.0*error/Math.PI));
                     //PID
                     accumulation_of_error += error * delta_time;
+                    accumulation_of_error = (float) ((accumulation_of_error < Math.PI/8.0)?(accumulation_of_error > -Math.PI/8.0)?accumulation_of_error:-Math.PI/8.0:Math.PI/8.0);                    
                     derivative_of_error = (error - last_error) / delta_time;
                     last_error = error;
                     output = (error * Kp) + (accumulation_of_error * Ki) + (derivative_of_error * Kd);
                     //Calculate new positions
+                    System.out.println("output="+output);
+                    //limit output +-45degrees
+                    output = (float) ((output < Math.PI/8.0)?(output > -Math.PI/8.0)?output:-Math.PI/8.0:Math.PI/8.0);
+                    System.out.println("output="+output);
                     TwoDPoint velocity = new TwoDPoint();
-                    velocity.x = enemyv.x + 10.0*9.81*delta_time*Math.cos(output);
-                    velocity.y = enemyv.y + 10.0*9.81*delta_time*Math.sin(output);
-                    TwoDPoint position = new TwoDPoint();
-                    position.x += velocity.x*delta_time;
-                    position.y += velocity.y*delta_time;
+                    System.out.println("enemyv.x="+enemyv.x+", y="+enemyv.y);
+                    velocity.x = ACCEL*(Math.cos(output)*enemyv.x-Math.sin(output)*enemyv.y)*delta_time*index+1.0;
+                    velocity.y = ACCEL*(Math.sin(output)*enemyv.x + Math.cos(output)*enemyv.y)*delta_time*index+1.0;
+                    positionx += velocity.x;
+                    positiony += velocity.y;
                     enemyv.x = velocity.x;
                     enemyv.y = velocity.y;
-                    enemy.add(position);
-                    TwoDPoint position2 = new TwoDPoint();
-                    position2.x = you.get(index).x+youv.x*delta_time;
-                    position2.y = you.get(index).y+youv.y*delta_time;
-                    you.add(position2);
+                    
+                    enemy.add(new TwoDPoint(positionx,positiony));
+                    position2x += youv.x*delta_time;
+                    position2y += youv.y*delta_time;
+                    
+                    you.add(new TwoDPoint(position2x,position2y));
                     index++;
                     pt.repaint();
+                    if(index >= 1000) {
+                        start = false;
+                        break;
+                    }
+                    System.out.println("Index="+index);
+//                    try {
+//                        Thread.sleep(2);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
                 }
             }
         }
         private void init() {
             enemy = new ArrayList<TwoDPoint>();
-            TwoDPoint ep = new TwoDPoint();
             ep.x = 0.0;
             ep.y = 0.0;
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
-            TwoDPoint mp = new TwoDPoint();
             mp.x = 500.0;
             mp.y = 0.0;
             you.add(mp);
             enemyv = new TwoDPoint();
-            enemyv.x = 0.0;
+            enemyv.x = 1.0;
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
-            youv.y = 1.0;
+            youv.y = 10.0;
 
         }
     }
