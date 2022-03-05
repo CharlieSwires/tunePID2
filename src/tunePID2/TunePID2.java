@@ -91,7 +91,7 @@ public class TunePID2 extends JPanel{
                     && ((you.get(index).y-enemy.get(index).y)*
                             (you.get(index).y-enemy.get(index).y)+
                             (you.get(index).x-enemy.get(index).x)*
-                            (you.get(index).x-enemy.get(index).x)) < 100.0) {
+                            (you.get(index).x-enemy.get(index).x)) < 10000.0) {
 
                         System.out.println("Bang");
                         start = false;
@@ -163,14 +163,14 @@ public class TunePID2 extends JPanel{
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
             mp.x = 500.0;
-            mp.y = 0.0;
+            mp.y = 400.0;
             you.add(mp);
             enemyv = new TwoDPoint();
             enemyv.x = 1.0;
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
-            youv.y = -10.0;
+            youv.y = -20.0;
 
         }
     }
