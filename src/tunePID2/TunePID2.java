@@ -35,7 +35,7 @@ public class TunePID2 extends JPanel{
     PIDThread thread;
     TwoDPoint ep = new TwoDPoint();
     TwoDPoint mp = new TwoDPoint();
-    static final double ACCEL = 9.81;
+    static final double ACCEL = 9.81*0.1;
     
     class TwoDPoint {
         public double x;
@@ -49,8 +49,8 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float Kp = 0.5f;
-        float Ki = 0.2f;
+        float Kp = 10.0f;
+        float Ki = 5.0f;
         float Kd = 0.0f;
         @Override
         public void run() {
@@ -107,7 +107,7 @@ public class TunePID2 extends JPanel{
                         enemyv.x = ACCEL*intlDirection.x*delta_time/amplitude;
                         enemyv.y = ACCEL*intlDirection.y*delta_time/amplitude;
                     }
-                    System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y-intlDirection.y)+","+(you.get(index).x-enemy.get(index).x-intlDirection.x));
+                    System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y)+","+(you.get(index).x-enemy.get(index).x));
                     error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
                     error -= (float) (Math.atan2(enemyv.y,enemyv.x));
                     error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
@@ -125,8 +125,12 @@ public class TunePID2 extends JPanel{
                     System.out.println("output="+output);
                     TwoDPoint velocity = new TwoDPoint();
                     System.out.println("enemyv.x="+enemyv.x+", y="+enemyv.y);
-                    velocity.x = ACCEL*(Math.cos(output)*enemyv.x-Math.sin(output)*enemyv.y)*delta_time*index+1.0;
-                    velocity.y = ACCEL*(Math.sin(output)*enemyv.x + Math.cos(output)*enemyv.y)*delta_time*index+1.0;
+                    intlDirection.x = you.get(index).x-enemy.get(index).x;
+                    intlDirection.y = you.get(index).y-enemy.get(index).y;
+                    amplitude = Math.sqrt(intlDirection.x*intlDirection.x+
+                            intlDirection.y*intlDirection.y);
+                    velocity.x = enemyv.x+ACCEL*(Math.cos(output)*enemyv.x-Math.sin(output)*enemyv.y)*delta_time;
+                    velocity.y = enemyv.y+ACCEL*(Math.sin(output)*enemyv.x + Math.cos(output)*enemyv.y)*delta_time;
                     positionx += velocity.x;
                     positiony += velocity.y;
                     enemyv.x = velocity.x;
@@ -154,7 +158,7 @@ public class TunePID2 extends JPanel{
         }
         private void init() {
             enemy = new ArrayList<TwoDPoint>();
-            ep.x = 0.0;
+            ep.x = -500.0;
             ep.y = 0.0;
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
@@ -166,7 +170,7 @@ public class TunePID2 extends JPanel{
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
-            youv.y = 10.0;
+            youv.y = -10.0;
 
         }
     }
