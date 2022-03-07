@@ -49,8 +49,8 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float Kp = 10.0f;
-        float Ki = 5.0f;
+        float Kp =100.0f;
+        float Ki = 50.0f;
         float Kd = 0.0f;
         @Override
         public void run() {
@@ -148,11 +148,11 @@ public class TunePID2 extends JPanel{
                         break;
                     }
                     System.out.println("Index="+index);
-//                    try {
-//                        Thread.sleep(2);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
