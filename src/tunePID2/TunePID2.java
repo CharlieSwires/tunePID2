@@ -170,7 +170,7 @@ public class TunePID2 extends JPanel{
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
-            youv.y = -20.0;
+            youv.y = -60.0;
 
         }
     }
