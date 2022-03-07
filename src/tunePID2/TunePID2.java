@@ -36,6 +36,7 @@ public class TunePID2 extends JPanel{
     TwoDPoint ep = new TwoDPoint();
     TwoDPoint mp = new TwoDPoint();
     static final double ACCEL = 9.81*0.1;
+    Explosion e = null;
     
     class TwoDPoint {
         public double x;
@@ -154,6 +155,17 @@ public class TunePID2 extends JPanel{
                         e.printStackTrace();
                     }
                 }
+                e = new Explosion((int)enemy.get(index).x+width/2, height/2 -(int)enemy.get(index).y);
+                for(int i=0; i < 255;i++) {
+                    try {
+                        pt.repaint();
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+ 
+                }
+                e = null;
             }
         }
         private void init() {
@@ -188,8 +200,45 @@ public class TunePID2 extends JPanel{
                 g.setColor(Color.GREEN);
                 g.drawLine((int)you.get(i-1).x+width/2, height/2 -(int)you.get(i-1).y, width/2+(int)you.get(i).x, height/2-(int)you.get(i).y);
             }
+            if (e != null) e.draw(g);
+
         }
 
+    }
+    class Explosion {
+        private static final int NO_POINTS = 200;
+        private double x[] = null;
+        private double y[] = null;
+        private double dx[] = null;
+        private double dy[] = null;
+        private int count = 255;
+        public Explosion(int x, int y) {
+            this.x = new double[NO_POINTS];
+            this.y = new double[NO_POINTS];
+            this.dx = new double[NO_POINTS];
+            this.dy = new double[NO_POINTS];
+            for (int i = 0; i < NO_POINTS;i++) {
+                this.x[i]=x;
+                this.y[i] =y;
+                double bearing = 2.0 * Math.PI * Math.random();
+                double speed = Math.random()*5.0;
+                this.dx[i] = speed*Math.sin(bearing);;
+                this.dy[i] = speed*Math.cos(bearing);
+            }
+        }
+
+        void draw(Graphics g) {
+            Color c = new Color(count,count,count--);
+            g.setColor(c);
+            for (int i = 0; i < NO_POINTS;i++) {
+                g.drawLine((int)x[i], (int)y[i], (int)x[i], (int)y[i]);
+                this.x[i]+=dx[i];
+                this.y[i]+=dy[i];
+            }
+        }
+        public int getCount() {
+            return count;
+        }
     }
 
 
