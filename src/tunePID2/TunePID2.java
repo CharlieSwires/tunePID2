@@ -231,7 +231,7 @@ public class TunePID2 extends JPanel{
             Color c = new Color(count,count,count--);
             g.setColor(c);
             for (int i = 0; i < NO_POINTS;i++) {
-                g.drawLine((int)x[i], (int)y[i], (int)x[i], (int)y[i]);
+                g.fillRect((int)x[i], (int)y[i], 5, 5);
                 this.x[i]+=dx[i];
                 this.y[i]+=dy[i];
             }
