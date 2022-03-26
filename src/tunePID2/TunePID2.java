@@ -35,7 +35,8 @@ public class TunePID2 extends JPanel{
     PIDThread thread;
     TwoDPoint ep = new TwoDPoint();
     TwoDPoint mp = new TwoDPoint();
-    static final double ACCEL = 9.81*0.1;
+    float initialTheta = 0.0f;
+    static final double ACCEL = 1.0*9.81;
     Explosion e = null;
     
     class TwoDPoint {
@@ -50,8 +51,8 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float Kp =100.0f;
-        float Ki = 50.0f;
+        float Kp = 7.0f;
+        float Ki = 3.0f;
         float Kd = 0.0f;
         @Override
         public void run() {
@@ -104,14 +105,14 @@ public class TunePID2 extends JPanel{
                         intlDirection.y = you.get(index).y-enemy.get(index).y;
                         amplitude = Math.sqrt(intlDirection.x*intlDirection.x+
                                 intlDirection.y*intlDirection.y);
-                  
+                        initialTheta = (float) Math.atan2(intlDirection.y,intlDirection.x);
                         enemyv.x = ACCEL*intlDirection.x*delta_time/amplitude;
                         enemyv.y = ACCEL*intlDirection.y*delta_time/amplitude;
                     }
                     System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y)+","+(you.get(index).x-enemy.get(index).x));
                     error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
-                    error -= (float) (Math.atan2(enemyv.y,enemyv.x));
-                    error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
+                    error -= (float) (initialTheta);
+                    //error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
                     System.out.println("error="+error+", "+(180.0*error/Math.PI));
                     //PID
                     accumulation_of_error += error * delta_time;
@@ -122,16 +123,12 @@ public class TunePID2 extends JPanel{
                     //Calculate new positions
                     System.out.println("output="+output);
                     //limit output +-45degrees
-                    output = (float) ((output < Math.PI/8.0)?(output > -Math.PI/8.0)?output:-Math.PI/8.0:Math.PI/8.0);
+                    //output = (float) ((output < Math.PI/8.0)?(output > -Math.PI/8.0)?output:-Math.PI/8.0:Math.PI/8.0);
                     System.out.println("output="+output);
                     TwoDPoint velocity = new TwoDPoint();
                     System.out.println("enemyv.x="+enemyv.x+", y="+enemyv.y);
-                    intlDirection.x = you.get(index).x-enemy.get(index).x;
-                    intlDirection.y = you.get(index).y-enemy.get(index).y;
-                    amplitude = Math.sqrt(intlDirection.x*intlDirection.x+
-                            intlDirection.y*intlDirection.y);
-                    velocity.x = enemyv.x+ACCEL*(Math.cos(output)*enemyv.x-Math.sin(output)*enemyv.y)*delta_time;
-                    velocity.y = enemyv.y+ACCEL*(Math.sin(output)*enemyv.x + Math.cos(output)*enemyv.y)*delta_time;
+                    velocity.x = enemyv.x+ACCEL*(Math.cos(output+initialTheta)-Math.sin(output+initialTheta))*delta_time;
+                    velocity.y = enemyv.y+ACCEL*(Math.sin(output+initialTheta)+ Math.cos(output+initialTheta))*delta_time;
                     positionx += velocity.x;
                     positiony += velocity.y;
                     enemyv.x = velocity.x;
@@ -144,7 +141,7 @@ public class TunePID2 extends JPanel{
                     you.add(new TwoDPoint(position2x,position2y));
                     index++;
                     pt.repaint();
-                    if(index >= 1000) {
+                    if(index >= 10000) {
                         start = false;
                         break;
                     }
