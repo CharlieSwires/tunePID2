@@ -6,6 +6,8 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -51,11 +53,28 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float Kp = 7.0f;
-        float Ki = 3.0f;
-        float Kd = 0.0f;
+        //kp=-12053.419, ki=-15207.633, kd=-30033.316
+        float Kp = -12053.419f;
+        float Ki = -15207.633f;
+        float Kd = -30033.316f;
+        float accumulation_of_error = 0.0f;
+        float derivative_of_error = 0.0f;
+
+        public float pid(float error) {
+            //error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
+            //PID
+            accumulation_of_error += error * delta_time;
+            accumulation_of_error = (float) ((accumulation_of_error < Math.PI/8.0)?(accumulation_of_error > -Math.PI/8.0)?accumulation_of_error:-Math.PI/8.0:Math.PI/8.0);                    
+            derivative_of_error = (error - last_error) / delta_time;
+            last_error = error;
+            output = (error * Kp) + (accumulation_of_error * Ki) + (derivative_of_error * Kd);
+            return output;
+        }
+
         @Override
         public void run() {
+            accumulation_of_error = 0.0f;
+            derivative_of_error = 0.0f;
             while(true) {
                 while(!start) {
                     try {
@@ -66,8 +85,6 @@ public class TunePID2 extends JPanel{
                 }
 
                 init();
-                float accumulation_of_error = 0.0f;
-                float derivative_of_error = 0.0f;
                 TwoDPoint intlDirection = new TwoDPoint();
                 double positionx;
                 double positiony;
@@ -90,10 +107,11 @@ public class TunePID2 extends JPanel{
                             (you.get(index-1).y-enemy.get(index-1).y)+
                             (you.get(index-1).x-enemy.get(index-1).x)*
                             (you.get(index-1).x-enemy.get(index-1).x))
-                    && ((you.get(index).y-enemy.get(index).y)*
-                            (you.get(index).y-enemy.get(index).y)+
-                            (you.get(index).x-enemy.get(index).x)*
-                            (you.get(index).x-enemy.get(index).x)) < 10000.0) {
+) {
+//                    && ((you.get(index).y-enemy.get(index).y)*
+//                            (you.get(index).y-enemy.get(index).y)+
+//                            (you.get(index).x-enemy.get(index).x)*
+//                            (you.get(index).x-enemy.get(index).x)) < 10000.0) {
 
                         System.out.println("Bang");
                         start = false;
@@ -112,14 +130,7 @@ public class TunePID2 extends JPanel{
                     System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y)+","+(you.get(index).x-enemy.get(index).x));
                     error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
                     error -= (float) (initialTheta);
-                    //error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
-                    System.out.println("error="+error+", "+(180.0*error/Math.PI));
-                    //PID
-                    accumulation_of_error += error * delta_time;
-                    accumulation_of_error = (float) ((accumulation_of_error < Math.PI/8.0)?(accumulation_of_error > -Math.PI/8.0)?accumulation_of_error:-Math.PI/8.0:Math.PI/8.0);                    
-                    derivative_of_error = (error - last_error) / delta_time;
-                    last_error = error;
-                    output = (error * Kp) + (accumulation_of_error * Ki) + (derivative_of_error * Kd);
+                    output = pid(error);
                     //Calculate new positions
                     System.out.println("output="+output);
                     //limit output +-45degrees
@@ -181,6 +192,173 @@ public class TunePID2 extends JPanel{
             youv.x = 0.0;
             youv.y = -60.0;
 
+        }
+        
+        class Chromasome{
+            public Chromasome(float kp, float ki, float kd, Float distanceSquared) {
+                this.kp = kp;
+                this.ki = ki;
+                this.kd = kd;
+                this.distanceSquared = distanceSquared;
+            }
+            public Chromasome() {
+                // TODO Auto-generated constructor stub
+            }
+            float kp;
+            float ki;
+            float kd;
+            Float distanceSquared;
+            @Override
+            public String toString() {
+                return "Chromasome [kp=" + kp + ", ki=" + ki + ", kd=" + kd + ", distanceSquared="
+                        + distanceSquared + "]";
+            }
+        }
+        public void geneticAlgorithm() {
+            Chromasome guesses[] = new Chromasome[1000];
+            for (int i = 0; i < guesses.length; i++) {
+                guesses[i] = new Chromasome((float)(Math.random()*2000000.0-1000000.0),
+                        (float)(Math.random()*2000000.0-1000000.0),
+                        (float)(Math.random()*2000000.0-1000000.0),
+                        null);
+            }
+            for (int i = 0; i < guesses.length; i++) {
+                guesses[i].distanceSquared = copyOfRun(
+                        guesses[i].kp,
+                        guesses[i].ki,
+                        guesses[i].kd);
+            }
+            List<Chromasome> guessesAsList = Arrays.asList(guesses);
+            
+            while (true) {
+                
+            guessesAsList.sort(new Comparator<Chromasome>() {
+
+                @Override
+                public int compare(Chromasome o1, Chromasome o2) {
+                    if (o1.distanceSquared == null && o2.distanceSquared == null) {
+                        return 0;
+                    } else if (o1.distanceSquared == null) {
+                        return 1;
+                    } else if (o2.distanceSquared == null) {
+                        return -1;
+                    } else if (o1.distanceSquared > o2.distanceSquared){
+                        return 1;
+                    } else return -1;
+                }
+                
+            });
+            for (int i = 0; i < 5; i++) {
+                System.out.println("i="+i+" guesses[i].distanceSquared="+guessesAsList.get(i).toString());
+            }
+            if (guessesAsList.get(0).distanceSquared < 1.0f) break;
+            //Breed
+            Chromasome top1 = guessesAsList.get(0);
+            Chromasome top2 = guessesAsList.get(1);
+            List<Chromasome> guessesAsList2 = new ArrayList<>();
+            for (int i = 0; i < guessesAsList.size();i++) {
+                Chromasome newBorne = new Chromasome();
+                if (Math.random() > 0.5) {
+                    newBorne.kp = top2.kp;
+                } else {
+                    newBorne.kp = top1.kp;
+                }
+                if (Math.random() > 0.5) {
+                    newBorne.ki = top2.ki;
+                } else {
+                    newBorne.ki = top1.ki;
+                }
+                if (Math.random() > 0.5) {
+                    newBorne.kd = top2.kd;
+                } else {
+                    newBorne.kd = top1.kd;
+                }
+
+                //Mutation up to 5%
+                newBorne.kp *= 1.0 -Math.random()*5.0/100.0;
+                newBorne.ki *= 1.0 -Math.random()*5.0/100.0;
+                newBorne.kd *= 1.0 -Math.random()*5.0/100.0;
+                guessesAsList2.add(newBorne);
+
+            }
+            guessesAsList = guessesAsList2;
+            for (int i = 0; i < guessesAsList.size(); i++) {
+                guessesAsList.get(i).distanceSquared = copyOfRun(
+                        guessesAsList.get(i).kp,
+                        guessesAsList.get(i).ki,
+                        guessesAsList.get(i).kd);
+            }
+           }
+        }
+        private Float copyOfRun(float kp, float ki, float kd) {
+            accumulation_of_error = 0.0f;
+            derivative_of_error = 0.0f;
+            Kp = kp;
+            Ki = ki;
+            Kp = kp;
+            init();
+            TwoDPoint intlDirection = new TwoDPoint();
+            double positionx;
+            double positiony;
+            positionx = ep.x;
+            positiony = ep.y;
+            double position2x;
+            double position2y;
+            position2x = mp.x;
+            position2y = mp.y;
+
+            double amplitude = 0.0;
+            int index = 0;
+            while(index <= 10000) {
+                //calculate error
+                if (index > 1 && ((you.get(index).y-enemy.get(index).y)*
+                        (you.get(index).y-enemy.get(index).y)+
+                        (you.get(index).x-enemy.get(index).x)*
+                        (you.get(index).x-enemy.get(index).x)) >
+                ((you.get(index-1).y-enemy.get(index-1).y)*
+                        (you.get(index-1).y-enemy.get(index-1).y)+
+                        (you.get(index-1).x-enemy.get(index-1).x)*
+                        (you.get(index-1).x-enemy.get(index-1).x))
+                        ) {
+
+                    return (float) ((you.get(index).y-enemy.get(index).y)*
+                            (you.get(index).y-enemy.get(index).y)+
+                            (you.get(index).x-enemy.get(index).x)*
+                            (you.get(index).x-enemy.get(index).x));
+                }
+                //Initial vector
+                if (index == 0) {
+                    intlDirection.x = you.get(index).x-enemy.get(index).x;
+                    intlDirection.y = you.get(index).y-enemy.get(index).y;
+                    amplitude = Math.sqrt(intlDirection.x*intlDirection.x+
+                            intlDirection.y*intlDirection.y);
+                    initialTheta = (float) Math.atan2(intlDirection.y,intlDirection.x);
+                    enemyv.x = ACCEL*intlDirection.x*delta_time/amplitude;
+                    enemyv.y = ACCEL*intlDirection.y*delta_time/amplitude;
+                }
+                error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
+                error -= (float) (initialTheta);
+                output = pid(error);
+                //Calculate new positions
+                //limit output +-45degrees
+                //output = (float) ((output < Math.PI/8.0)?(output > -Math.PI/8.0)?output:-Math.PI/8.0:Math.PI/8.0);
+                TwoDPoint velocity = new TwoDPoint();
+                velocity.x = enemyv.x+ACCEL*(Math.cos(output+initialTheta)-Math.sin(output+initialTheta))*delta_time;
+                velocity.y = enemyv.y+ACCEL*(Math.sin(output+initialTheta)+ Math.cos(output+initialTheta))*delta_time;
+                positionx += velocity.x;
+                positiony += velocity.y;
+                enemyv.x = velocity.x;
+                enemyv.y = velocity.y;
+                
+                enemy.add(new TwoDPoint(positionx,positiony));
+                position2x += youv.x*delta_time;
+                position2y += youv.y*delta_time;
+                
+                you.add(new TwoDPoint(position2x,position2y));
+                index++;
+
+            }
+            return null;
         }
     }
     @Override
@@ -270,6 +448,8 @@ public class TunePID2 extends JPanel{
     public static void main(String[] args) {
         pt = new TunePID2();
         pt.thread = pt.new PIDThread();
+//        pt.thread.geneticAlgorithm();
+
         pt.new PaintDemo();
         pt.thread.start();
 
