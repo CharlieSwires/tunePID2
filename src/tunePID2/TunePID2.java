@@ -53,10 +53,10 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        //kp=-413983.94, ki=1317012.1, kd=-1630752.0
-        float Kp = -413983.94f;
-        float Ki = 1317012.1f;
-        float Kd = -1630752.0f;
+        float kp=-497881.75f, ki=-710402.8f, kd=-400333.97f;
+        float Kp = kp;
+        float Ki = ki;
+        float Kd = kd;
         float accumulation_of_error = 0.0f;
         float derivative_of_error = 0.0f;
 
@@ -186,7 +186,7 @@ public class TunePID2 extends JPanel{
             mp.y = 400.0;
             you.add(mp);
             enemyv = new TwoDPoint();
-            enemyv.x = 1.0;
+            enemyv.x = 5.0;
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
@@ -248,10 +248,10 @@ public class TunePID2 extends JPanel{
                     }
 
                 });
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 1; i++) {
                     System.out.println("i="+i+" guesses[i].distanceSquared="+guessesAsList.get(i).toString());
                 }
-                if (guessesAsList.get(0).distanceSquared < 10.0f) break;
+                if (guessesAsList.get(0).distanceSquared < 5.0f) break;
                 //Breed
                 Chromasome top1 = guessesAsList.get(0);
                 Chromasome top2 = guessesAsList.get(1);
