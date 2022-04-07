@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -53,7 +54,7 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float kp=-497881.75f, ki=-710402.8f, kd=-400333.97f;
+        float kp=-103.50353f, ki=-102.49658f, kd=117.1957f;
         float Kp = kp;
         float Ki = ki;
         float Kd = kd;
@@ -190,7 +191,24 @@ public class TunePID2 extends JPanel{
             enemyv.y = 0.0;
             youv = new TwoDPoint();
             youv.x = 0.0;
-            youv.y = -60.0;
+            youv.y = -100.0;
+
+        }
+        private void init2(Random rand) {
+            enemy = new ArrayList<TwoDPoint>();
+            ep.x = -500.0;
+            ep.y = 0.0;
+            enemy.add(ep);
+            you = new ArrayList<TwoDPoint>();
+            mp.x = 1000.0*(rand.nextDouble()-0.5);
+            mp.y = 1000.0*(rand.nextDouble()-0.5);
+            you.add(mp);
+            enemyv = new TwoDPoint();
+            enemyv.x = 0.0;
+            enemyv.y = 0.0;
+            youv = new TwoDPoint();
+            youv.x = 1000.0*(rand.nextDouble()-0.5);
+            youv.y = 1000.0*(rand.nextDouble()-0.5);;
 
         }
 
@@ -217,16 +235,22 @@ public class TunePID2 extends JPanel{
         public void geneticAlgorithm() {
             Chromasome guesses[] = new Chromasome[1000];
             for (int i = 0; i < guesses.length; i++) {
-                guesses[i] = new Chromasome((float)(Math.random()*2000000.0-1000000.0),
-                        (float)(Math.random()*2000000.0-1000000.0),
-                        (float)(Math.random()*2000000.0-1000000.0),
+                guesses[i] = new Chromasome((float)(Math.random()*200.0-100.0),
+                        (float)(Math.random()*200.0-100.0),
+                        (float)(Math.random()*200.0-100.0),
                         null);
             }
             for (int i = 0; i < guesses.length; i++) {
-                guesses[i].distanceSquared = copyOfRun(
-                        guesses[i].kp,
-                        guesses[i].ki,
-                        guesses[i].kd);
+                Random rand = new Random(0);
+                guesses[i].distanceSquared = 0.0f;
+                for (int noSessions = 0; noSessions < 100; noSessions++) {
+                    guesses[i].distanceSquared += copyOfRun(
+                            rand,
+                            guesses[i].kp,
+                            guesses[i].ki,
+                            guesses[i].kd);
+                    
+                }
             }
             List<Chromasome> guessesAsList = Arrays.asList(guesses);
 
@@ -283,20 +307,26 @@ public class TunePID2 extends JPanel{
                 }
                 guessesAsList = guessesAsList2;
                 for (int i = 0; i < guessesAsList.size(); i++) {
-                    guessesAsList.get(i).distanceSquared = copyOfRun(
-                            guessesAsList.get(i).kp,
-                            guessesAsList.get(i).ki,
-                            guessesAsList.get(i).kd);
+                    Random rand = new Random(0);
+                    guessesAsList.get(i).distanceSquared = 0.0f;
+                    for (int noSessions = 0; noSessions < 100; noSessions++) {
+                        guessesAsList.get(i).distanceSquared += copyOfRun(
+                                rand,
+                                guessesAsList.get(i).kp,
+                                guessesAsList.get(i).ki,
+                                guessesAsList.get(i).kd);
+                        
+                    }
                 }
             }
         }
-        private Float copyOfRun(float kp, float ki, float kd) {
+        private Float copyOfRun(Random rand, float kp, float ki, float kd) {
             accumulation_of_error = 0.0f;
             derivative_of_error = 0.0f;
             Kp = kp;
             Ki = ki;
             Kp = kp;
-            init();
+            init2(rand);
             TwoDPoint intlDirection = new TwoDPoint();
             double positionx;
             double positiony;
