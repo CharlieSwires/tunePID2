@@ -54,7 +54,7 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float kp=4.9203506f, ki=792.3666f, kd=547.13873f;
+        float kp=-26.714428f, ki=73.656044f, kd=103.96094f;
         float Kp = kp;
         float Ki = ki;
         float Kd = kd;
