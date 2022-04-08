@@ -54,7 +54,7 @@ public class TunePID2 extends JPanel{
     }
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
-        float kp=-103.50353f, ki=-102.49658f, kd=117.1957f;
+        float kp=4.9203506f, ki=792.3666f, kd=547.13873f;
         float Kp = kp;
         float Ki = ki;
         float Kd = kd;
@@ -196,19 +196,19 @@ public class TunePID2 extends JPanel{
         }
         private void init2(Random rand) {
             enemy = new ArrayList<TwoDPoint>();
-            ep.x = -500.0;
+            ep.x = 0.0;
             ep.y = 0.0;
             enemy.add(ep);
             you = new ArrayList<TwoDPoint>();
-            mp.x = 1000.0*(rand.nextDouble()-0.5);
-            mp.y = 1000.0*(rand.nextDouble()-0.5);
+            mp.x = 2000.0*(rand.nextDouble()-0.5);
+            mp.y = 2000.0*(rand.nextDouble()-0.5);
             you.add(mp);
             enemyv = new TwoDPoint();
             enemyv.x = 0.0;
             enemyv.y = 0.0;
             youv = new TwoDPoint();
-            youv.x = 1000.0*(rand.nextDouble()-0.5);
-            youv.y = 1000.0*(rand.nextDouble()-0.5);;
+            youv.x = 200.0*(rand.nextDouble()-0.5);
+            youv.y = 200.0*(rand.nextDouble()-0.5);;
 
         }
 
