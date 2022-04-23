@@ -299,9 +299,9 @@ public class TunePID2 extends JPanel{
                     }
 
                     //Mutation up to 5%
-                    newBorne.kp *= 1.1 -Math.random()*10.0/100.0;
-                    newBorne.ki *= 1.1 -Math.random()*10.0/100.0;
-                    newBorne.kd *= 1.1 -Math.random()*10.0/100.0;
+                    newBorne.kp *= 1.1 -Math.random()*20.0/100.0;
+                    newBorne.ki *= 1.1 -Math.random()*20.0/100.0;
+                    newBorne.kd *= 1.1 -Math.random()*20.0/100.0;
                     guessesAsList2.add(newBorne);
 
                 }
@@ -478,10 +478,10 @@ public class TunePID2 extends JPanel{
     public static void main(String[] args) {
         pt = new TunePID2();
         pt.thread = pt.new PIDThread();
-//        pt.thread.geneticAlgorithm();
+        pt.thread.geneticAlgorithm();
 
-        pt.new PaintDemo();
-        pt.thread.start();
+//        pt.new PaintDemo();
+//        pt.thread.start();
 
 
     }
