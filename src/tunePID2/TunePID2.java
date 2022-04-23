@@ -233,7 +233,7 @@ public class TunePID2 extends JPanel{
             }
         }
         public void geneticAlgorithm() {
-            Chromasome guesses[] = new Chromasome[1000];
+            Chromasome guesses[] = new Chromasome[2000];
             for (int i = 0; i < guesses.length; i++) {
                 guesses[i] = new Chromasome((float)(Math.random()*200.0-100.0),
                         (float)(Math.random()*200.0-100.0),
