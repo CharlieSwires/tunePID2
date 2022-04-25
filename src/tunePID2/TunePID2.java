@@ -19,7 +19,7 @@ import javax.swing.JPanel;
 public class TunePID2 extends JPanel{
 
     /**
-     * 
+     * Globals
      */
     private static final long serialVersionUID = 1L;
     float error = 0.0f;
@@ -42,6 +42,11 @@ public class TunePID2 extends JPanel{
     static final double ACCEL = 1.0*9.81;
     Explosion e = null;
 
+    /**
+     * 2d point double accuracy
+     * @author charl
+     *
+     */
     class TwoDPoint {
         public double x;
         public double y;
@@ -52,6 +57,12 @@ public class TunePID2 extends JPanel{
         public TwoDPoint() {
         }
     }
+    /**
+     * Combination of the animation code for the target and missile
+     * which shares code with the genetic algorithm not good SOLID oops!
+     * @author charl
+     *
+     */
     class PIDThread extends Thread{
         float delta_time = (float)(1.0/100.0);
         float kp=-26.714428f, ki=73.656044f, kd=103.96094f;
@@ -61,8 +72,12 @@ public class TunePID2 extends JPanel{
         float accumulation_of_error = 0.0f;
         float derivative_of_error = 0.0f;
 
+        /**
+         * Standard PID algorithm
+         * @param error
+         * @return
+         */
         public float pid(float error) {
-            //error = (float) ((error < Math.PI/8.0)?(error > -Math.PI/8.0)?error:-Math.PI/8.0:Math.PI/8.0);
             //PID
             accumulation_of_error += error * delta_time;
             accumulation_of_error = (float) ((accumulation_of_error < Math.PI/8.0)?(accumulation_of_error > -Math.PI/8.0)?accumulation_of_error:-Math.PI/8.0:Math.PI/8.0);                    
@@ -72,6 +87,9 @@ public class TunePID2 extends JPanel{
             return output;
         }
 
+        /**
+         * runner for animation
+         */
         @Override
         public void run() {
             accumulation_of_error = 0.0f;
@@ -128,17 +146,11 @@ public class TunePID2 extends JPanel{
                         enemyv.x = ACCEL*intlDirection.x*delta_time/amplitude;
                         enemyv.y = ACCEL*intlDirection.y*delta_time/amplitude;
                     }
-                    System.out.println("you.get(index).y-enemy.get(index).y-intl="+(you.get(index).y-enemy.get(index).y)+","+(you.get(index).x-enemy.get(index).x));
                     error = (float) (Math.atan2(you.get(index).y-enemy.get(index).y,you.get(index).x-enemy.get(index).x));
                     error -= (float) (initialTheta);
                     output = pid(error);
                     //Calculate new positions
-                    System.out.println("output="+output);
-                    //limit output +-45degrees
-                    //output = (float) ((output < Math.PI/8.0)?(output > -Math.PI/8.0)?output:-Math.PI/8.0:Math.PI/8.0);
-                    System.out.println("output="+output);
                     TwoDPoint velocity = new TwoDPoint();
-                    System.out.println("enemyv.x="+enemyv.x+", y="+enemyv.y);
                     velocity.x = enemyv.x+ACCEL*(Math.cos(output+initialTheta)-Math.sin(output+initialTheta))*delta_time;
                     velocity.y = enemyv.y+ACCEL*(Math.sin(output+initialTheta)+ Math.cos(output+initialTheta))*delta_time;
                     positionx += velocity.x;
@@ -157,7 +169,6 @@ public class TunePID2 extends JPanel{
                         start = false;
                         break;
                     }
-                    System.out.println("Index="+index);
                     try {
                         Thread.sleep(10);
                     } catch (InterruptedException e) {
@@ -177,6 +188,10 @@ public class TunePID2 extends JPanel{
                 e = null;
             }
         }
+
+        /**
+         * init for runner
+         */
         private void init() {
             enemy = new ArrayList<TwoDPoint>();
             ep.x = -500.0;
@@ -194,6 +209,10 @@ public class TunePID2 extends JPanel{
             youv.y = -100.0;
 
         }
+        /**
+         * init for copyOfRun
+         * @param rand
+         */
         private void init2(Random rand) {
             enemy = new ArrayList<TwoDPoint>();
             ep.x = 0.0;
@@ -212,6 +231,11 @@ public class TunePID2 extends JPanel{
 
         }
 
+        /**
+         * Chromasome structure
+         * @author charl
+         *
+         */
         class Chromasome{
             public Chromasome(float kp, float ki, float kd, Float distanceSquared) {
                 this.kp = kp;
@@ -232,6 +256,14 @@ public class TunePID2 extends JPanel{
                         + distanceSquared + "]";
             }
         }
+        /**
+         * Genetic algorithm
+         * 1. Set 2000 guesses
+         * 2. run in 100 scenarios
+         * 3. sort into nearest first farthest last
+         * 4. breed best 2 for 2000 and add +-10% mutation
+         * 5. run in same 100 scenarios goto 3
+         */
         public void geneticAlgorithm() {
             Chromasome guesses[] = new Chromasome[2000];
             for (int i = 0; i < guesses.length; i++) {
@@ -249,7 +281,7 @@ public class TunePID2 extends JPanel{
                             guesses[i].kp,
                             guesses[i].ki,
                             guesses[i].kd);
-                    
+
                 }
             }
             List<Chromasome> guessesAsList = Arrays.asList(guesses);
@@ -315,11 +347,19 @@ public class TunePID2 extends JPanel{
                                 guessesAsList.get(i).kp,
                                 guessesAsList.get(i).ki,
                                 guessesAsList.get(i).kd);
-                        
+
                     }
                 }
             }
         }
+        /**
+         * Copy of Run with parameters for Genetic Algorithm
+         * @param rand
+         * @param kp
+         * @param ki
+         * @param kd
+         * @return
+         */
         private Float copyOfRun(Random rand, float kp, float ki, float kd) {
             accumulation_of_error = 0.0f;
             derivative_of_error = 0.0f;
@@ -351,6 +391,9 @@ public class TunePID2 extends JPanel{
                         (you.get(index-1).x-enemy.get(index-1).x))
                         ) {
 
+                    /**
+                     * return closest point of approach
+                     */
                     return (float) ((you.get(index).y-enemy.get(index).y)*
                             (you.get(index).y-enemy.get(index).y)+
                             (you.get(index).x-enemy.get(index).x)*
@@ -388,9 +431,15 @@ public class TunePID2 extends JPanel{
                 index++;
 
             }
+            /**
+             * return null if doesn't finish in 10,000 iterations
+             */
             return null;
         }
     }
+    /**
+     * Called by repaint for the animation runner.
+     */
     @Override
     public void paint(Graphics g) {
         super.paint(g);
@@ -410,6 +459,11 @@ public class TunePID2 extends JPanel{
         }
 
     }
+    /**
+     * Explosion type for drawing the collision between missile and target.
+     * @author charl
+     *
+     */
     class Explosion {
         private static final int NO_POINTS = 200;
         private double x[] = null;
@@ -445,8 +499,11 @@ public class TunePID2 extends JPanel{
             return count;
         }
     }
-
-
+    /**
+     * Set up the runner screen and buttons
+     * @author charl
+     *
+     */
     class PaintDemo{
 
         PaintDemo(){
@@ -475,13 +532,21 @@ public class TunePID2 extends JPanel{
         }
     }
 
+    /**
+     * For kicking everything off
+     * @param args
+     */
     public static void main(String[] args) {
         pt = new TunePID2();
         pt.thread = pt.new PIDThread();
-        pt.thread.geneticAlgorithm();
-
-//        pt.new PaintDemo();
-//        pt.thread.start();
+        if(args.length > 0 && args[0].equals("genetic")) {
+            pt.thread.geneticAlgorithm();
+        } else if(args.length > 0 && args[0].equals("runner")){
+            pt.new PaintDemo();
+            pt.thread.start();
+        } else {
+            System.out.println("java TunePID2 <genetic||runner>");
+        }
 
 
     }
