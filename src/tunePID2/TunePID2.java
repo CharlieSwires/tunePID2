@@ -330,7 +330,7 @@ public class TunePID2 extends JPanel{
                         newBorne.kd = top1.kd;
                     }
 
-                    //Mutation up to 5%
+                    //Mutation up to +-random * 10%
                     newBorne.kp *= 1.1 -Math.random()*20.0/100.0;
                     newBorne.ki *= 1.1 -Math.random()*20.0/100.0;
                     newBorne.kd *= 1.1 -Math.random()*20.0/100.0;
