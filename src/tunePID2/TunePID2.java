@@ -261,7 +261,7 @@ public class TunePID2 extends JPanel{
          * 1. Set 2000 guesses
          * 2. run in 100 scenarios
          * 3. sort into nearest first farthest last
-         * 4. breed best 2 for 2000 and add +-10% mutation
+         * 4. breed best 2 for 2000 and add +-5% mutation
          * 5. run in same 100 scenarios goto 3
          */
         public void geneticAlgorithm() {
