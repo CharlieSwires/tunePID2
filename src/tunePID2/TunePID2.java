@@ -41,6 +41,7 @@ public class TunePID2 extends JPanel{
     float initialTheta = 0.0f;
     static final double ACCEL = 1.0*9.81;
     Explosion e = null;
+    static final int pauseMilli = 10;
 
     /**
      * 2d point double accuracy
@@ -64,7 +65,7 @@ public class TunePID2 extends JPanel{
      *
      */
     class PIDThread extends Thread{
-        float delta_time = (float)(1.0/100.0);
+        float delta_time = (float)(pauseMilli/1000.0);
         float kp=-26.714428f, ki=73.656044f, kd=103.96094f;
         float Kp = kp;
         float Ki = ki;
@@ -97,7 +98,7 @@ public class TunePID2 extends JPanel{
             while(true) {
                 while(!start) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(pauseMilli);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -170,7 +171,7 @@ public class TunePID2 extends JPanel{
                         break;
                     }
                     try {
-                        Thread.sleep(10);
+                        Thread.sleep(pauseMilli);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -179,7 +180,7 @@ public class TunePID2 extends JPanel{
                 for(int i=0; i < 255;i++) {
                     try {
                         pt.repaint();
-                        Thread.sleep(10);
+                        Thread.sleep(pauseMilli);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
