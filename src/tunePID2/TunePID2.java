@@ -257,10 +257,10 @@ public class TunePID2 extends JPanel{
             public Chromasome() {
                 // TODO Auto-generated constructor stub
             }
-            float kp;
-            float ki;
-            float kd;
-            Float distanceSquared;
+            public float kp;
+            public float ki;
+            public float kd;
+            public Float distanceSquared;
             @Override
             public String toString() {
                 return "Chromasome [kp=" + kp + ", ki=" + ki + ", kd=" + kd + ", distanceSquared="
