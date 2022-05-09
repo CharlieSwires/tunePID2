@@ -58,7 +58,7 @@ public class TunePID2 extends JPanel{
      * @author charl
      *
      */
-    class TwoDPoint {
+    public class TwoDPoint {
         public double x;
         public double y;
         TwoDPoint(double x, double y){
@@ -74,7 +74,7 @@ public class TunePID2 extends JPanel{
      * @author charl
      *
      */
-    class PIDThread extends Thread{
+    public class PIDThread extends Thread{
         float delta_time = (float)(pauseMilli/1000.0);
         float kp=-26.714428f, ki=73.656044f, kd=103.96094f;
         float Kp = kp;
@@ -203,7 +203,7 @@ public class TunePID2 extends JPanel{
         /**
          * init for runner
          */
-        private void init() {
+        public void init() {
             enemy = new ArrayList<TwoDPoint>();
             ep.x = -500.0;
             ep.y = 0.0;
@@ -224,7 +224,7 @@ public class TunePID2 extends JPanel{
          * init for copyOfRun
          * @param rand
          */
-        private void init2(Random rand) {
+        public void init2(Random rand) {
             enemy = new ArrayList<TwoDPoint>();
             ep.x = 0.0;
             ep.y = 0.0;
@@ -247,7 +247,7 @@ public class TunePID2 extends JPanel{
          * @author charl
          *
          */
-        class Chromasome{
+        public class Chromasome{
             public Chromasome(float kp, float ki, float kd, Float distanceSquared) {
                 this.kp = kp;
                 this.ki = ki;
@@ -371,7 +371,7 @@ public class TunePID2 extends JPanel{
          * @param kd
          * @return
          */
-        private Float copyOfRun(Random rand, float kp, float ki, float kd) {
+        public Float copyOfRun(Random rand, float kp, float ki, float kd) {
             accumulation_of_error = 0.0f;
             derivative_of_error = 0.0f;
             Kp = kp;
@@ -475,7 +475,7 @@ public class TunePID2 extends JPanel{
      * @author charl
      *
      */
-    class Explosion {
+    public class Explosion {
         private static final int NO_POINTS = 200;
         private double x[] = null;
         private double y[] = null;
@@ -497,7 +497,7 @@ public class TunePID2 extends JPanel{
             }
         }
 
-        void draw(Graphics g) {
+        public void draw(Graphics g) {
             Color c = new Color(count,count,count--);
             g.setColor(c);
             for (int i = 0; i < NO_POINTS;i++) {
@@ -515,7 +515,7 @@ public class TunePID2 extends JPanel{
      * @author charl
      *
      */
-    class PaintDemo{
+    public class PaintDemo{
 
         PaintDemo(){
             jfrm.setSize(width, height);
