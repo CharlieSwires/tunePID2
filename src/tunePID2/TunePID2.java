@@ -15,7 +15,17 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-
+/**
+ * This class contains two things:
+ * 1. A thread for animating a possible intercept using chosen constants
+ * 2. A genetic algorithm which is used with 2000 guesses at values followed
+ * by a trial on 100 random cases to see how good each guess is. The top two
+ * by distance squared least are bread from to make another 2000 with +-5%
+ * mutation.
+ * 
+ * @author charl
+ *
+ */
 public class TunePID2 extends JPanel{
 
     /**
