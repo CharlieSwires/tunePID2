@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"tunePID2","l":"TunePID2.PIDThread.Chromasome"},{"p":"tunePID2","l":"TunePID2.Explosion"},{"p":"tunePID2","l":"TunePID2.PaintDemo"},{"p":"tunePID2","l":"TunePID2.PIDThread"},{"p":"tunePID2","l":"TunePID2"},{"p":"tunePID2","l":"TunePID2.TwoDPoint"}];updateSearchResults();
